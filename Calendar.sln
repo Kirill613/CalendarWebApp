@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32519.379
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservices", "{2F553FC3-3743-44CC-BB9D-B8291217EF77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarAPI.Services", "CalendarAPI.Services\CalendarAPI.Services.csproj", "{A7131238-9873-4C25-89D4-5B09E98AE62F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapAPI.Services", "MapAPI.Services\MapAPI.Services.csproj", "{989A32C4-333B-4A8E-9AC7-A010068CFF32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherAPI.Services", "WeatherAPI.Services\WeatherAPI.Services.csproj", "{9D9AAFCF-3F53-4BD3-843A-9C84AAEBA5D2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateway", "ApiGateway", "{9F74C2F2-6095-4F6F-A555-A2E2CC1540A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcelotApiGateway", "OcelotApiGateway\OcelotApiGateway.csproj", "{484C76F9-E604-4640-8634-939600AFC4CD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A7131238-9873-4C25-89D4-5B09E98AE62F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7131238-9873-4C25-89D4-5B09E98AE62F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7131238-9873-4C25-89D4-5B09E98AE62F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7131238-9873-4C25-89D4-5B09E98AE62F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{989A32C4-333B-4A8E-9AC7-A010068CFF32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{989A32C4-333B-4A8E-9AC7-A010068CFF32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{989A32C4-333B-4A8E-9AC7-A010068CFF32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{989A32C4-333B-4A8E-9AC7-A010068CFF32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D9AAFCF-3F53-4BD3-843A-9C84AAEBA5D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D9AAFCF-3F53-4BD3-843A-9C84AAEBA5D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D9AAFCF-3F53-4BD3-843A-9C84AAEBA5D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D9AAFCF-3F53-4BD3-843A-9C84AAEBA5D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{484C76F9-E604-4640-8634-939600AFC4CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{484C76F9-E604-4640-8634-939600AFC4CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{484C76F9-E604-4640-8634-939600AFC4CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{484C76F9-E604-4640-8634-939600AFC4CD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A7131238-9873-4C25-89D4-5B09E98AE62F} = {2F553FC3-3743-44CC-BB9D-B8291217EF77}
+		{989A32C4-333B-4A8E-9AC7-A010068CFF32} = {2F553FC3-3743-44CC-BB9D-B8291217EF77}
+		{9D9AAFCF-3F53-4BD3-843A-9C84AAEBA5D2} = {2F553FC3-3743-44CC-BB9D-B8291217EF77}
+		{484C76F9-E604-4640-8634-939600AFC4CD} = {9F74C2F2-6095-4F6F-A555-A2E2CC1540A3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DCB9E25B-3FFD-4C10-887F-73AEA4931871}
+	EndGlobalSection
+EndGlobal
