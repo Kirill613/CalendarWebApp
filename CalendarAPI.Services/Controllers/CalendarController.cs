@@ -19,15 +19,15 @@ namespace CalendarAPI.Services.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Event>>> GetAllEvents()
         {
-            var events = _eventRepository.GetEvents();
+            var events = await _eventRepository.GetEventsAsync();
             return Ok(events);
         }
 
         // GET api/<CalendarController>/5
         [HttpGet("{eventId}")]
-        public async Task<ActionResult<Event>> GetOneEvent(Guid eventId)
+        public async Task<ActionResult<Event>> GetOneEvent(string eventId)
         {
-            var currEvent = _eventRepository.GetEventByID(eventId);
+            var currEvent = await _eventRepository.GetEventByIDAsync(eventId);
 
             if (currEvent == null)
                 return NotFound("There is no entity with this ID");
@@ -62,7 +62,7 @@ namespace CalendarAPI.Services.Controllers
 
         // DELETE api/<CalendarController>/5
         [HttpDelete("{eventId}")]
-        public async Task<ActionResult> Delete(Guid eventId)
+        public async Task<ActionResult> Delete(string eventId)
         {
             bool isDeleted = _eventRepository.DeleteEvent(eventId);
 

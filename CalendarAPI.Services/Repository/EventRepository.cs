@@ -8,15 +8,45 @@
         {
             _dbContext = dbContext;
         }
-
-        public Event ? GetEventByID(Guid eventtId)
+        private Event? GetEventByID(Guid eventId)
         {
-            return _dbContext.Events.FirstOrDefault(ev => ev.Id == eventtId);
+            return _dbContext.Events.FirstOrDefault(ev => ev.Id == eventId);
         }
 
-        public IEnumerable<Event> GetEvents()
+        private Event? GetEventByID(string eventId)
         {
-            return _dbContext.Events.ToList();
+            try
+            {
+                Guid _eventId = new Guid(eventId);
+                return GetEventByID(_eventId);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private async Task<Event?> GetEventByIDAsync(Guid eventId)
+        {
+            return await _dbContext.Events.FirstOrDefaultAsync(ev => ev.Id == eventId);
+        }
+
+        public async Task<Event?> GetEventByIDAsync(string eventId)
+        {
+            try
+            {
+                Guid _eventId = new Guid(eventId);
+                return await GetEventByIDAsync(_eventId);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<Event>> GetEventsAsync()
+        {
+            return await _dbContext.Events.ToListAsync();
         }
 
         public bool AddEvent(Event currEvent)
@@ -43,14 +73,14 @@
             return true;
         }
 
-        public bool DeleteEvent(Guid eventId)
+        public bool DeleteEvent(string eventId)
         {
             var currEvent = GetEventByID(eventId);
 
             if (currEvent == null)
                 return false;
 
-            _dbContext.Events.Remove(currEvent);
+            _dbContext.Remove(currEvent);
             Save();
             return true;
         }

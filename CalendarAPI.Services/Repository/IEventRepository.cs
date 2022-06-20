@@ -2,11 +2,11 @@
 {
     public interface IEventRepository
     {
-        public Event ? GetEventByID(Guid eventtId);
-        public IEnumerable<Event> GetEvents();
+        public Task<Event?> GetEventByIDAsync(string eventtId);
+        public Task<IEnumerable<Event>> GetEventsAsync();
         public bool AddEvent(Event currEvent);
         public bool UpdateEvent(Event currEvent);
-        public bool DeleteEvent(Guid eventtId);
+        public bool DeleteEvent(string eventtId);
         public void Save();
     }
 }
