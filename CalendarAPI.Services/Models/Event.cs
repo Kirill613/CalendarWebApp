@@ -7,10 +7,9 @@
         public string ? Title { get; set; }
         public string ? Message { get; set; }
 
-        public DateOnly Date { get; set; }
         public bool IsAllDayEvent { get; set; }
-        public TimeOnly BeginTime { get; set; }
-        public TimeOnly EndTime { get; set; }
+        public DateTime BeginTime { get; set; }
+        public DateTime EndTime { get; set; }
 
         public double ? Lattitude { get; set; }
         public double ? Longtitude { get; set; }
