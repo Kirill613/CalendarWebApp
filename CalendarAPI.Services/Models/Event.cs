@@ -7,16 +7,15 @@
         public string ? Title { get; set; }
         public string ? Message { get; set; }
 
+        public DateOnly Date { get; set; }
         public bool IsAllDayEvent { get; set; }
-        public DateTime BeginDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public TimeOnly BeginTime { get; set; }
+        public TimeOnly EndTime { get; set; }
 
-        public double Lattitude { get; set; }
-        public double Longtitude { get; set; }
+        public double ? Lattitude { get; set; }
+        public double ? Longtitude { get; set; }
         public string ? LocationName { get; set; }
 
-
-        public Guid? DayId { get; set; }
         public Guid UserId { get; set; }
     }
 }
