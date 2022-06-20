@@ -4,8 +4,20 @@
   },
   "Routes": [
     {
+      "UpstreamPathTemplate": "/calendar/{eventId}",
+      "UpstreamHttpMethod": [ "DELETE", "GET" ],
+      "DownstreamPathTemplate": "/api/calendar/{eventId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5004
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/calendar",
-      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ],
       "DownstreamPathTemplate": "/api/calendar",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
