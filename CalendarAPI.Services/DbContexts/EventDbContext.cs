@@ -1,6 +1,4 @@
-﻿using CalendarAPI.Services.Models;
-
-namespace CalendarAPI.Services.DbContexts
+﻿namespace CalendarAPI.Services.DbContexts
 {
     public class EventDbContext : DbContext
     {

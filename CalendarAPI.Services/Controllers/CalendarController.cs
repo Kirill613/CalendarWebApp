@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using CalendarAPI.Services.Repository;
+using System.Transactions;
 
 namespace CalendarAPI.Services.Controllers
 {
@@ -8,36 +8,68 @@ namespace CalendarAPI.Services.Controllers
     [ApiController]
     public class CalendarController : ControllerBase
     {
+        private readonly IEventRepository _eventRepository;
+
+        public CalendarController(IEventRepository eventRepository)
+        {
+            _eventRepository = eventRepository;
+        }
+
         // GET: api/<CalendarController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<IEnumerable<Event>>> GetAllEvents()
         {
-            return new string[] { "calendar1", "calendar2" };
+            var events = _eventRepository.GetEvents();
+            return Ok(events);
         }
 
         // GET api/<CalendarController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("{eventId}")]
+        public async Task<ActionResult<Event>> GetOneEvent(Guid eventId)
         {
-            return "calendar";
+            var currEvent = _eventRepository.GetEventByID(eventId);
+
+            if (currEvent == null)
+                return NotFound("There is no entity with this ID");
+
+            return Ok(currEvent);
         }
 
         // POST api/<CalendarController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult> AddEvent([FromBody] Event currEvent)
         {
+            bool isAdded = _eventRepository.AddEvent(currEvent);
+
+            if (!isAdded)
+                return BadRequest("Event with the same ID already exists");
+
+            //return CreatedAtAction(nameof(GetOneEvent), new { id = currEvent.Id }, currEvent);
+            return Ok();
         }
 
         // PUT api/<CalendarController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public async Task<ActionResult> PutEvent([FromBody] Event currEvent)
         {
+            bool isUpdated = _eventRepository.UpdateEvent(currEvent);
+
+            if (!isUpdated)
+                return NotFound("There is no entity with this ID");
+
+            return Ok();
         }
 
         // DELETE api/<CalendarController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("{eventId}")]
+        public async Task<ActionResult> Delete(Guid eventId)
         {
+            bool isDeleted = _eventRepository.DeleteEvent(eventId);
+
+            if (!isDeleted)
+                return NotFound("There is no entity with this ID");
+
+            return Ok();
         }
     }
 }
