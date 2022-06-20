@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Configuration;
-using System.Linq;
 using CalendarAPI.Services.Models;
 
 namespace CalendarAPI.Services.DbContexts
