@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WeatherAPI.Services.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,36 +9,27 @@ namespace WeatherAPI.Services.Controllers
     [ApiController]
     public class WeatherController : ControllerBase
     {
-        // GET: api/<WeatherController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private IWeatherService _weatherService;
+
+        public WeatherController(IWeatherService wetherService)
         {
-            return new string[] { "value1", "value2" };
+            _weatherService = wetherService;
         }
 
-        // GET api/<WeatherController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        // GET: api/<WeatherController>/Minsk
+        [HttpGet("{city}")]
+        public async Task<IActionResult> City(string city)
         {
-            return "value";
+            try
+            {
+                var rawWeather = await _weatherService.CityAsync(city);
+                return Ok(rawWeather);
+            }
+            catch (HttpRequestException httpRequestException)
+            {
+                return BadRequest($"Error getting weather from OpenWeather: {httpRequestException.Message}");
+            }
         }
 
-        // POST api/<WeatherController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<WeatherController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<WeatherController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }
