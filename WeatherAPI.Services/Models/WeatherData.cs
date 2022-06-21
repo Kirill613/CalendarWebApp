@@ -2,14 +2,17 @@
 {
     public class WeatherData
     {
-        public Coord coord { get; set; }
-        public Weather[] weather { get; set; }
-        public string name { get; set; }
+        public List<WeatherList> list { get; set; }
     }
-    public class Coord
+    public class WeatherList
     {
-        public double lon { get; set; }
-        public double lat { get; set; }
+        public int dt { get; set; }
+        public Main main { get; set; }
+        public List<Weather> weather { get; set; }
+    }
+    public class Main
+    {
+        public double temp { get; set; }
     }
     public class Weather
     {
@@ -18,4 +21,12 @@
         public string description { get; set; }
         public string icon { get; set; }
     }
+
+    /*public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+    {
+        // Unix timestamp is seconds past epoch
+        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+        return dateTime;
+    }*/
 }

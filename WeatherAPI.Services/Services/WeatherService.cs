@@ -6,28 +6,20 @@ namespace WeatherAPI.Services.Services
     public class WeatherService : IWeatherService
     {
         private HttpClient _httpClient;
+        private readonly string apiKey = "91c57af0a890e5643306f5a5cd09a7e3";
         public WeatherService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
-
-        public async Task<WeatherData> CityAsync(string city)
+        public async Task<WeatherData> GetForecast(double latitude, double longitude, int cnt) 
         {
-            WeatherData rawWeather = new WeatherData();
+            _httpClient.BaseAddress = new Uri("https://api.openweathermap.org");        
 
-            _httpClient.BaseAddress = new Uri("https://api.openweathermap.org");
-
-            string apiKey = "91c57af0a890e5643306f5a5cd09a7e3";
-            double latitude = 53.893009;
-            double longitude = 27.567444;
-            
-            var response = await _httpClient.GetAsync($"/data/2.5/weather?lat={latitude}&lon={longitude}&appid={apiKey}");
-            response.EnsureSuccessStatusCode();
-
-            var stringResult = await response.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<WeatherData>(stringResult);
+            var response = await _httpClient.GetStringAsync($"/data/2.5/forecast?lat={latitude}" +
+                                                                        $"&lon={longitude}" +
+                                                                        $"&appid={apiKey}" +
+                                                                        $"&cnt={cnt}");
+            return JsonConvert.DeserializeObject<WeatherData>(response);
         }
-
     }
 }
