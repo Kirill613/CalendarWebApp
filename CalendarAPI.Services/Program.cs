@@ -1,7 +1,9 @@
 global using CalendarAPI.Services.DbContexts;
 global using Microsoft.EntityFrameworkCore;
 global using CalendarAPI.Services.Models;
+using NLog;
 using CalendarAPI.Services.Repository;
+using CalendarAPI.Services.Logger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,9 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<EventDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddTransient<IEventRepository, EventRepository>();
+
+LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+builder.Services.AddSingleton<ILoggerManager, LoggerManager>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
