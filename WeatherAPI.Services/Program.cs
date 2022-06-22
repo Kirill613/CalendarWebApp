@@ -1,6 +1,8 @@
+using NLog;
 using Polly;
 using Polly.Extensions.Http;
 using WeatherAPI.Services.Services;
+using WeatherAPI.Services.Logger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,9 @@ static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
                                                                     retryAttempt)));
 }
+
+LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+builder.Services.AddSingleton<ILoggerManager, LoggerManager>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
