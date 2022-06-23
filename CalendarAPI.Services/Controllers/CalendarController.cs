@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using CalendarAPI.Services.Repository;
 using CalendarAPI.Services.Logger;
 
@@ -8,25 +9,28 @@ namespace CalendarAPI.Services.Controllers
     [ApiController]
     public class CalendarController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
         private readonly IEventRepository _eventRepository;
 
-        public CalendarController(IEventRepository eventRepository, ILoggerManager logger)
+        public CalendarController(IEventRepository eventRepository, ILoggerManager logger, IMapper mapper)
         {
-            _logger = logger;
             _eventRepository = eventRepository;
+            _logger = logger;
+            _mapper = mapper;   
         }
 
         // GET: api/<CalendarController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Event>>> GetAllEvents()
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetAllEvents()
         {
             try
             {
                 var events = await _eventRepository.GetEventsAsync();
-
                 _logger.LogInfo($"Returned all events from database.");
-                return Ok(events);
+
+                var eventsResult = _mapper.Map<IEnumerable<EventDto>>(events);
+                return Ok(eventsResult);
             }
             catch (Exception ex)
             {
@@ -37,7 +41,7 @@ namespace CalendarAPI.Services.Controllers
 
         // GET api/<CalendarController>/5
         [HttpGet("{eventId}")]
-        public async Task<ActionResult<Event>> GetOneEvent(string eventId)
+        public async Task<ActionResult<EventDto>> GetOneEvent(string eventId)
         {
             try
             {
@@ -50,7 +54,9 @@ namespace CalendarAPI.Services.Controllers
                 }
 
                 _logger.LogInfo($"Returned Event with id: {eventId}");
-                return Ok(currEvent);
+
+                var eventResult = _mapper.Map<EventDto>(currEvent);
+                return Ok(eventResult);
             }
             catch (Exception ex)
             {
@@ -61,10 +67,12 @@ namespace CalendarAPI.Services.Controllers
 
         // POST api/<CalendarController>
         [HttpPost]
-        public async Task<ActionResult> AddEvent([FromBody] Event currEvent)
+        public async Task<ActionResult> AddEvent([FromBody] EventDto eventDto)
         {
             try
             {
+                var currEvent = _mapper.Map<Event>(eventDto);
+
                 bool isAdded = _eventRepository.AddEvent(currEvent);
 
                 if (!isAdded)
@@ -76,7 +84,8 @@ namespace CalendarAPI.Services.Controllers
                 //return CreatedAtAction(nameof(GetOneEvent), new { id = currEvent.Id }, currEvent);
 
                 _logger.LogInfo($"Event with id : {currEvent.Id} created.");
-                return Ok();
+
+                return CreatedAtAction(nameof(AddEvent), new { id = currEvent.Id }, currEvent);
             }
             catch (Exception ex)
             {
@@ -87,10 +96,12 @@ namespace CalendarAPI.Services.Controllers
 
         // PUT api/<CalendarController>/5
         [HttpPut]
-        public async Task<ActionResult> PutEvent([FromBody] Event currEvent)
+        public async Task<ActionResult> PutEvent([FromBody] EventDto eventDto)
         {
             try
             {
+                var currEvent = _mapper.Map<Event>(eventDto);
+
                 bool isUpdated = _eventRepository.UpdateEvent(currEvent);
 
                 if (!isUpdated)
@@ -100,7 +111,7 @@ namespace CalendarAPI.Services.Controllers
                 }
 
                 _logger.LogInfo($"Event with id : {currEvent.Id} updated.");
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -124,7 +135,7 @@ namespace CalendarAPI.Services.Controllers
                 }
 
                 _logger.LogInfo($"Event with id : {eventId} deleted.");
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
