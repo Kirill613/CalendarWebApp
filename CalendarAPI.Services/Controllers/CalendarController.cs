@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using CalendarAPI.Services.Repository;
 using CalendarAPI.Services.Logger;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CalendarAPI.Services.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CalendarController : ControllerBase
     {
         private readonly IMapper _mapper;

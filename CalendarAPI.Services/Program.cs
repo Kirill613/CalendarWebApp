@@ -11,6 +11,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddAuthentication("Bearer")
+              .AddJwtBearer("Bearer", config => {
+                  config.Authority = "https://localhost:44305/";
+
+                  config.Audience = "CalendarApi";
+              });
+
 builder.Services.AddDbContext<EventDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddTransient<IEventRepository, EventRepository>();
@@ -35,6 +42,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
