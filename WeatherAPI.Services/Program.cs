@@ -10,6 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddAuthentication("Bearer")
+              .AddJwtBearer("Bearer", config => {
+                  config.Authority = "https://localhost:44305/";
+
+                  config.Audience = "WeatherApi";
+              });
+
+
 builder.Services.AddHttpClient<IWeatherService, WeatherService>()
        .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
        .AddPolicyHandler(GetRetryPolicy());
@@ -43,6 +51,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

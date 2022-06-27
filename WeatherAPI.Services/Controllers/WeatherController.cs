@@ -3,6 +3,7 @@ using WeatherAPI.Services.Services;
 using WeatherAPI.Services.Logger;
 using AutoMapper;
 using WeatherAPI.Services.Models;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,6 +26,7 @@ namespace WeatherAPI.Services.Controllers
 
         // GET: api/Weather
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetWeatherForecast(double lat, double lon, int cnt)
         {
             /*            
@@ -47,6 +49,5 @@ namespace WeatherAPI.Services.Controllers
                 return BadRequest($"Error getting weather from OpenWeather: {httpRequestException.Message}");
             }
         }
-
     }
 }

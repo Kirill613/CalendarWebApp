@@ -13,12 +13,13 @@ namespace WeatherAPI.Services.Services
         }
         public async Task<WeatherData> GetForecast(double latitude, double longitude, int cnt) 
         {
-            _httpClient.BaseAddress = new Uri("https://api.openweathermap.org");        
+            _httpClient.BaseAddress = new Uri("https://api.openweathermap.org");
 
             var response = await _httpClient.GetStringAsync($"/data/2.5/forecast?lat={latitude}" +
                                                                         $"&lon={longitude}" +
                                                                         $"&appid={apiKey}" +
                                                                         $"&cnt={cnt}");
+
             return JsonConvert.DeserializeObject<WeatherData>(response);
         }
     }
