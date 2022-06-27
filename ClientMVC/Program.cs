@@ -15,7 +15,18 @@ builder.Services.AddAuthentication(config => {
                     config.SaveTokens = true;
 
                     config.ResponseType = "code";
+
+                    config.GetClaimsFromUserInfoEndpoint = true;
+
+                    config.Scope.Clear();
+                    config.Scope.Add("openid");
+                    //config.Scope.Add("profile");
+                    config.Scope.Add("WeatherApi");
+                    config.Scope.Add("CalendarApi");
+                    config.Scope.Add("offline_access");
                 });
+
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

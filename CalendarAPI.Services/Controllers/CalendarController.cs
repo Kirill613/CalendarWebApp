@@ -26,6 +26,7 @@ namespace CalendarAPI.Services.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventDto>>> GetAllEvents()
         {
+            var claims = User.Claims.ToList();
             try
             {
                 var events = await _eventRepository.GetEventsAsync();
