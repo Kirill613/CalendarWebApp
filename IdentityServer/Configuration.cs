@@ -44,7 +44,8 @@ namespace IdentityServer
                         "ClientApi",
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                    }
+                    },
+                    RequireConsent = false
                 }
             };
     }
