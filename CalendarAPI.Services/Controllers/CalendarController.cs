@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using CalendarAPI.Services.Repository;
 using CalendarAPI.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
+using System.Reflection;
+using System.Security.Claims;
 
 namespace CalendarAPI.Services.Controllers
 {
@@ -19,14 +21,24 @@ namespace CalendarAPI.Services.Controllers
         {
             _eventRepository = eventRepository;
             _logger = logger;
-            _mapper = mapper;   
+            _mapper = mapper;
         }
 
         // GET: api/<CalendarController>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventDto>>> GetAllEvents()
         {
-            var claims = User.Claims.ToList();
+           /* var asd = User.Claims.FirstOrDefault(field => field.Type == "NameIdentifier");
+
+            var asd = fields.FirstOrDefault(field => field.GetValue(null).ToString() == "NameIdentifier");
+
+            if (asd != null)
+            {
+                var asd1 = asd.Name.ToString();
+            }
+*/
+
+
             try
             {
                 var events = await _eventRepository.GetEventsAsync();
@@ -39,7 +51,7 @@ namespace CalendarAPI.Services.Controllers
             {
                 _logger.LogError($"Something went wrong inside GetAllEvents action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
-            }          
+            }
         }
 
         // GET api/<CalendarController>/5
@@ -65,7 +77,7 @@ namespace CalendarAPI.Services.Controllers
             {
                 _logger.LogError($"Something went wrong inside GetOneEvent action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
-            }           
+            }
         }
 
         // POST api/<CalendarController>
@@ -94,7 +106,7 @@ namespace CalendarAPI.Services.Controllers
             {
                 _logger.LogError($"Something went wrong inside AddEvent action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
-            }            
+            }
         }
 
         // PUT api/<CalendarController>/5
@@ -120,7 +132,7 @@ namespace CalendarAPI.Services.Controllers
             {
                 _logger.LogError($"Something went wrong inside PutEvent action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
-            }            
+            }
         }
 
         // DELETE api/<CalendarController>/5
@@ -144,7 +156,7 @@ namespace CalendarAPI.Services.Controllers
             {
                 _logger.LogError($"Something went wrong inside DeleteEvent action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
-            }           
+            }
         }
     }
 }

@@ -29,13 +29,6 @@ namespace WeatherAPI.Services.Controllers
         [Authorize]
         public async Task<IActionResult> GetWeatherForecast(double lat, double lon, int cnt)
         {
-            /*            
-            double latitude = 53.893009;
-            double longitude = 27.567444;
-            int cnt = 8;
-            */
-            
-
             try
             {
                 var rawWeather = await _weatherService.GetForecast(lat, lon, cnt);

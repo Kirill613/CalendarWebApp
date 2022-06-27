@@ -16,6 +16,8 @@ builder.Services.AddAuthentication(config => {
 
                     config.ResponseType = "code";
 
+                    config.SignedOutCallbackPath = "/Home/Index";
+
                     config.GetClaimsFromUserInfoEndpoint = true;
 
                     config.Scope.Clear();

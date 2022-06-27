@@ -3,12 +3,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IdentityModel.Client;
 using System.IdentityModel.Tokens.Jwt;
+using ClientMvc.Models;
+using Newtonsoft.Json;
+using ClientMvc.ModelViews;
 
 namespace ClientMvc.Controllers
 {
     public class HomeController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
+
+        public IEnumerable<EventDto> AllEvents { get; private set; }
 
         public HomeController(IHttpClientFactory httpClientFactory)
         {
@@ -18,6 +23,10 @@ namespace ClientMvc.Controllers
         public IActionResult Index()
         {
             return View(nameof(Index));
+        }
+        public IActionResult Logout()
+        {
+            return SignOut("Cookie", "oidc");
         }
 
         [Authorize]
@@ -31,24 +40,26 @@ namespace ClientMvc.Controllers
 
             var claims = User.Claims.ToList();
 
+
             var result = await GetCalendarInfo(accessToken);
 
-            return View(nameof(Secret));
+            EventsViewModel eventsViewModel = new EventsViewModel();
+            eventsViewModel.AllEvents = (List<EventDto>)result;
+
+            return View(nameof(Secret), eventsViewModel);
         }
 
-        public async Task<string> GetCalendarInfo(string accessToken)
+        public async Task<IEnumerable<EventDto>> GetCalendarInfo(string accessToken)
         {
             var apiClient = _httpClientFactory.CreateClient();
 
             apiClient.SetBearerToken(accessToken);
 
-            var response = await apiClient.GetAsync("https://localhost:5003/api/Calendar");
-
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await apiClient.GetStringAsync("https://localhost:5003/api/Calendar");
 
             await RefreshAccessToken();
 
-            return content;
+            return JsonConvert.DeserializeObject<List<EventDto>>(response);
         }
 
         private async Task RefreshAccessToken()

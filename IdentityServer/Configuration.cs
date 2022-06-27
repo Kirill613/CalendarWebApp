@@ -37,6 +37,7 @@ namespace IdentityServer
                     AllowedGrantTypes = GrantTypes.Code,
 
                     RedirectUris = { "https://localhost:2000/signin-oidc" },
+                    PostLogoutRedirectUris = { "https://localhost:2000/Home/Index" },
 
                     AllowedScopes = {
                         "WeatherApi",
