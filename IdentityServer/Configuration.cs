@@ -17,19 +17,19 @@ namespace IdentityServer
             new List<ApiResource> {
                 new ApiResource("WeatherApi"),
                 new ApiResource("CalendarApi"),
-                new ApiResource("ClientApi")
+                //new ApiResource("ClientApi")
             };
 
         public static IEnumerable<Client> GetClients() =>
             new List<Client> {
-                new Client {
+               /* new Client {
                     ClientId = "client_id",
                     ClientSecrets = { new Secret("client_secret".ToSha256()) },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                     AllowedScopes = { "WeatherApi", "CalendarApi" }
-                },
+                },*/
                  new Client {
                     ClientId = "client_id_mvc",
                     ClientSecrets = { new Secret("client_secret_mvc".ToSha256()) },
@@ -42,7 +42,7 @@ namespace IdentityServer
                     AllowedScopes = {
                         "WeatherApi",
                         "CalendarApi",
-                        "ClientApi",
+                        //"ClientApi",
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                     },
