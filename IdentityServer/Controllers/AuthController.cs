@@ -47,6 +47,10 @@ namespace IdentityServer.Controllers
         public async Task<IActionResult> Login(LoginViewModel vm)
         {
             // check if the model is valid
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
 
             var result = await _signInManager.PasswordSignInAsync(vm.Username, vm.Password, false, false);
 
@@ -59,13 +63,14 @@ namespace IdentityServer.Controllers
 
             }
 
-            return View();
+            return View(vm);
         }
 
         [HttpGet]
         public IActionResult Register(string returnUrl)
         {
-            return View(new RegisterViewModel { ReturnUrl = returnUrl });
+            RegisterViewModel registerViewModel = new RegisterViewModel() { ReturnUrl = returnUrl };
+            return View(registerViewModel);
         }
 
         [HttpPost]
@@ -86,7 +91,7 @@ namespace IdentityServer.Controllers
                 return Redirect(vm.ReturnUrl);
             }
 
-            return View();
+            return View(vm);
         }
     }
 }

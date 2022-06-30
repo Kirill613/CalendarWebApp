@@ -20,7 +20,6 @@ builder.Services.AddAuthentication(config => {
 
                     config.GetClaimsFromUserInfoEndpoint = true;
 
-                    config.Scope.Clear();
                     config.Scope.Add("openid");
                     //config.Scope.Add("profile");
                     config.Scope.Add("WeatherApi");
