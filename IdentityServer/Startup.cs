@@ -41,8 +41,8 @@ namespace IdentityServer
             services.ConfigureApplicationCookie(config =>
             {
                 config.Cookie.Name = "IdentityServer.Cookie";
-                config.LoginPath = "/Auth/Login";
-                config.LogoutPath = "/Auth/Logout";
+              /*  config.LoginPath = "/Auth/Login";
+                config.LogoutPath = "/Auth/Logout";*/
             });
 
             var assembly = typeof(Startup).Assembly.GetName().Name;
@@ -75,6 +75,11 @@ namespace IdentityServer
             }
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseStaticFiles();
 
             app.UseIdentityServer();
 

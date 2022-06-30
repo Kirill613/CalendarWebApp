@@ -1,5 +1,4 @@
-﻿using IdentityServer.Models;
-using IdentityServer4.Services;
+﻿using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;

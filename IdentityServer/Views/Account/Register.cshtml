@@ -1,0 +1,39 @@
+﻿@model IdentityServer.Controllers.RegisterViewModel
+
+
+<div class="col-sm-6">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Local Login</h3>
+        </div>
+        <div class="panel-body">
+
+            <form asp-controller="Account" asp-action="Register" method="post">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <fieldset>
+                    <div class="form-group">
+                        <label asp-for="Username"></label>
+                        <input class="form-control" placeholder="Username" asp-for="Username" autofocus>
+                        <span asp-validation-for="Username"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password"></label>
+                        <input type="password" class="form-control" placeholder="Password" asp-for="Password" autofocus>
+                        <span asp-validation-for="Password"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password"></label>
+                        <input type="password" class="form-control" placeholder="ConfirmPassword" asp-for="ConfirmPassword" autofocus>
+                        <span asp-validation-for="ConfirmPassword"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-primary" name="button" value="register">Register</button>
+                        <a class="btn btn-default" name="button" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">Back to login</a>
+                    </div>
+                </fieldset>
+
+            </form>
+        </div>
+    </div>
+</div>
