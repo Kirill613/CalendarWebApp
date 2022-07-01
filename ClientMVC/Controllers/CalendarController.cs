@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ClientMvc.Models;
+using ClientMvc.Controllers;
 using ClientMvc.ModelViews;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication;
@@ -41,12 +42,12 @@ namespace ClientMvc.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(evCreateViewModel);
+                return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "Create", evCreateViewModel) });
             }
 
             if (IsBeginLessThanEndAndIsDayTheSame(evCreateViewModel.BeginTime, evCreateViewModel.EndTime))
             {
-                return View(evCreateViewModel);
+                return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "Create", evCreateViewModel) });
             }
 
             try
@@ -54,11 +55,17 @@ namespace ClientMvc.Controllers
                 var eventDto = _mapper.Map<EventDto>(evCreateViewModel);
 
                 var res = await CreateEvent(eventDto);
-                return RedirectToAction("Secret", "Home");
+
+
+                var result = await GetCalendarInfo();
+                EventsViewModel eventsViewModel = new EventsViewModel();
+                eventsViewModel.AllEvents = (List<EventDto>)result;
+
+                return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "Secret", eventsViewModel) });
             }
             catch
             {
-                return View(evCreateViewModel);
+                return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "Create", evCreateViewModel) });
             }
         }
 
@@ -70,11 +77,11 @@ namespace ClientMvc.Controllers
             try
             {
                 var res = await DeleteEvent(id);
-                return RedirectToAction("Secret", "Home");
+                return RedirectToAction("Secret");
             }
             catch
             {
-                return RedirectToAction("Secret", "Home");
+                return RedirectToAction("Secret");
             }
         }
 
@@ -94,12 +101,12 @@ namespace ClientMvc.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(evCreateViewModel);
+                return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "Edit", evCreateViewModel) });
             }
 
             if (IsBeginLessThanEndAndIsDayTheSame(evCreateViewModel.BeginTime, evCreateViewModel.EndTime))
             {
-                return View(evCreateViewModel);
+                return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "Edit", evCreateViewModel) });
             }
 
             try
@@ -107,14 +114,28 @@ namespace ClientMvc.Controllers
                 var eventDto = _mapper.Map<EventDto>(evCreateViewModel);
 
                 var res = await EditEvent(eventDto);
-                return RedirectToAction("Secret", "Home");
+
+                var result = await GetCalendarInfo();
+                EventsViewModel eventsViewModel = new EventsViewModel();
+                eventsViewModel.AllEvents = (List<EventDto>)result;
+
+                return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "Secret", eventsViewModel) });              
+                //return RedirectToAction("Secret", "Home");
             }
             catch
             {
-                return View(evCreateViewModel);
+                return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "Edit", evCreateViewModel) });
             }
         }
+        public async Task<IActionResult> Secret()
+        {
+            var result = await GetCalendarInfo();
 
+            EventsViewModel eventsViewModel = new EventsViewModel();
+            eventsViewModel.AllEvents = (List<EventDto>)result;
+
+            return View(nameof(Secret), eventsViewModel);
+        }
         private bool IsBeginLessThanEndAndIsDayTheSame(DateTime beginTime, DateTime endTime)
         {
             if (beginTime.Date != endTime.Date)
@@ -134,6 +155,20 @@ namespace ClientMvc.Controllers
 
             return false;
         }
+        private async Task<IEnumerable<EventDto>> GetCalendarInfo()
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+            var apiClient = _httpClientFactory.CreateClient();
+
+            apiClient.SetBearerToken(accessToken);
+
+            var response = await apiClient.GetStringAsync("https://localhost:5003/api/Calendar");
+
+            await RefreshAccessToken();
+
+            return JsonConvert.DeserializeObject<List<EventDto>>(response);
+        }  
         private async Task<IActionResult> CreateEvent(EventDto eventDto)
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");

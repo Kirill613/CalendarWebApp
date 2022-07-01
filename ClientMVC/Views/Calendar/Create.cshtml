@@ -3,7 +3,7 @@
 @model ClientMvc.ModelViews.EvCreateViewModel
 
 @{
-    //Layout = null;
+    Layout = null;
     ViewBag.UserId = new Guid(@User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value); 
 }
 
@@ -11,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-controller="Calendar" asp-action="Create">
+        <form asp-controller="Calendar" asp-action="Create" onsubmit="return jQueryAjaxPost(this);">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
@@ -47,5 +47,5 @@
 </div>
 
 <div>
-    <a asp-controller="Home" asp-action="Secret">Back to List</a>
+    <a asp-controller="Calendar" asp-action="Secret">Back to List</a>
 </div>
