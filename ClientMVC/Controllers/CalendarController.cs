@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using WeatherAPI.Services.Models;
 
 namespace ClientMvc.Controllers
 {
@@ -53,15 +54,9 @@ namespace ClientMvc.Controllers
             try
             {
                 var eventDto = _mapper.Map<EventDto>(evCreateViewModel);
-
                 var res = await CreateEvent(eventDto);
 
-
-                var result = await GetCalendarInfo();
-                EventsViewModel eventsViewModel = new EventsViewModel();
-                eventsViewModel.AllEvents = (List<EventDto>)result;
-
-                return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "Secret", eventsViewModel) });
+                return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "Secret", await GetSecretModel()) });
             }
             catch
             {
@@ -112,14 +107,9 @@ namespace ClientMvc.Controllers
             try
             {
                 var eventDto = _mapper.Map<EventDto>(evCreateViewModel);
-
                 var res = await EditEvent(eventDto);
 
-                var result = await GetCalendarInfo();
-                EventsViewModel eventsViewModel = new EventsViewModel();
-                eventsViewModel.AllEvents = (List<EventDto>)result;
-
-                return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "Secret", eventsViewModel) });              
+                return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "Secret", await GetSecretModel()) });
                 //return RedirectToAction("Secret", "Home");
             }
             catch
@@ -129,12 +119,86 @@ namespace ClientMvc.Controllers
         }
         public async Task<IActionResult> Secret()
         {
+            return View(nameof(Secret), await GetSecretModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateUI(DateTime date)
+        {
+            EventsViewModel vm = new EventsViewModel();
+            vm = await GetSecretModel();
+            vm.date = date;
+            return View(nameof(Secret), vm);
+        }
+
+
+        private async Task<EventsViewModel> GetSecretModel()
+        {
             var result = await GetCalendarInfo();
 
             EventsViewModel eventsViewModel = new EventsViewModel();
             eventsViewModel.AllEvents = (List<EventDto>)result;
 
-            return View(nameof(Secret), eventsViewModel);
+            var resTemperatures = await GetWeather();
+
+            var beginForecastTime = DateOnly.FromDateTime(DateTime.Now);
+            var endForecastTime = beginForecastTime.AddDays(4);
+
+            Dictionary<DateOnly, List<EventDto>> events = new Dictionary<DateOnly, List<EventDto>>();
+            Dictionary<EventDto, int> eventsWithWeather = new Dictionary<EventDto, int>();
+
+            foreach (EventDto eventDto in eventsViewModel.AllEvents)
+            {
+                var currDay = DateOnly.FromDateTime(eventDto.BeginTime);
+                if (!events.ContainsKey(currDay))
+                {
+                    events.Add(currDay, new List<EventDto>() { eventDto });
+                }
+                else
+                {
+                    List<EventDto> currDayList = events[currDay];
+                    currDayList.Add(eventDto);
+                    events[currDay] = currDayList;
+                }             
+
+                if (currDay >= beginForecastTime && currDay <= endForecastTime)
+                {
+                    eventsWithWeather.Add(eventDto, FindClosestTemp(resTemperatures, eventDto));
+                }
+            }
+
+            eventsViewModel.AllElementsByDays = events;
+            eventsViewModel.AllForecast5Days = eventsWithWeather;
+           
+            return eventsViewModel;
+        }
+        private int FindClosestTemp(WeatherDataDto resTemperatures, EventDto eventDto)
+        {
+            Int32 unixEndTime = (int)eventDto.EndTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            Int32 unixBeginTime = (int)eventDto.BeginTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            int timeMiddle = (unixEndTime / 2 + unixBeginTime / 2) ;
+        
+            int min = 0;
+            WeatherListDto dtMinTime = new WeatherListDto();
+            foreach(var item in resTemperatures.list)
+            {
+                int result = Math.Abs(timeMiddle - item.dt);
+
+                if (result <= min || min == 0)
+                {
+                    min = result;
+                    dtMinTime = item;
+                }
+            }
+
+            return (int)(dtMinTime.main.temp - 273.15);
+        }
+        private DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        {
+            // Unix timestamp is seconds past epoch
+            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            return dateTime;
         }
         private bool IsBeginLessThanEndAndIsDayTheSame(DateTime beginTime, DateTime endTime)
         {
@@ -155,6 +219,20 @@ namespace ClientMvc.Controllers
 
             return false;
         }
+        private async Task<WeatherDataDto> GetWeather()
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+            var apiClient = _httpClientFactory.CreateClient();
+
+            apiClient.SetBearerToken(accessToken);
+
+            var response = await apiClient.GetStringAsync("https://localhost:5007/api/Weather");
+
+            await RefreshAccessToken();
+
+            return JsonConvert.DeserializeObject<WeatherDataDto>(response);
+        }
         private async Task<IEnumerable<EventDto>> GetCalendarInfo()
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
@@ -168,7 +246,7 @@ namespace ClientMvc.Controllers
             await RefreshAccessToken();
 
             return JsonConvert.DeserializeObject<List<EventDto>>(response);
-        }  
+        }
         private async Task<IActionResult> CreateEvent(EventDto eventDto)
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
