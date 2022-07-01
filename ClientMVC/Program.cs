@@ -29,6 +29,8 @@ builder.Services.AddAuthentication(config => {
 
 builder.Services.AddHttpClient();
 
+builder.Services.AddAutoMapper(typeof(Program));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

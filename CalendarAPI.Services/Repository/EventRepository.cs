@@ -44,9 +44,9 @@
             }
         }
 
-        public async Task<IEnumerable<Event>> GetEventsAsync()
+        public async Task<IEnumerable<Event>> GetEventsAsync(Guid id)
         {
-            return await _dbContext.Events.ToListAsync();
+            return await _dbContext.Events.Where(ev => ev.UserId == id).ToListAsync();
         }
 
         public bool AddEvent(Event currEvent)

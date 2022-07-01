@@ -4,6 +4,7 @@ global using CalendarAPI.Services.Models;
 using NLog;
 using CalendarAPI.Services.Repository;
 using CalendarAPI.Services.Logger;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,7 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nl
 builder.Services.AddSingleton<ILoggerManager, LoggerManager>();
 
 builder.Services.AddAutoMapper(typeof(Program));
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

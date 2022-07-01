@@ -9,20 +9,17 @@
         <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="form-control form-control-dark w-100">
-        <div class="nav-item">
-            @if (User.Identity.IsAuthenticated)
-            {
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="form-control form-control-dark w-100">
+            <div class="nav-item">
                 <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">
                     @User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value
                 </a>
                 <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" asp-controller="Home" asp-action="Logout">Logout</a>
-            }
-            else
-            {
-                <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" asp-controller="Home" asp-action="Register">Register</a>
-                <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" asp-controller="Home" asp-action="Login">Login</a>
-            }
+            </div>
         </div>
-    </div>
+    }
+
 </header>

@@ -5,6 +5,7 @@ using CalendarAPI.Services.Logger;
 using Microsoft.AspNetCore.Authorization;
 using System.Reflection;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace CalendarAPI.Services.Controllers
 {
@@ -17,7 +18,9 @@ namespace CalendarAPI.Services.Controllers
         private readonly ILoggerManager _logger;
         private readonly IEventRepository _eventRepository;
 
-        public CalendarController(IEventRepository eventRepository, ILoggerManager logger, IMapper mapper)
+        public CalendarController(IEventRepository eventRepository, 
+                                  ILoggerManager logger, 
+                                  IMapper mapper)
         {
             _eventRepository = eventRepository;
             _logger = logger;
@@ -28,20 +31,13 @@ namespace CalendarAPI.Services.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventDto>>> GetAllEvents()
         {
-           /* var asd = User.Claims.FirstOrDefault(field => field.Type == "NameIdentifier");
-
-            var asd = fields.FirstOrDefault(field => field.GetValue(null).ToString() == "NameIdentifier");
-
-            if (asd != null)
-            {
-                var asd1 = asd.Name.ToString();
-            }
-*/
-
-
             try
             {
-                var events = await _eventRepository.GetEventsAsync();
+                var asd = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                //IdentityUser user = await GetCurrentUserAsync();
+
+                var events = await _eventRepository.GetEventsAsync(new Guid(asd));
                 _logger.LogInfo($"Returned all events from database.");
 
                 var eventsResult = _mapper.Map<IEnumerable<EventDto>>(events);

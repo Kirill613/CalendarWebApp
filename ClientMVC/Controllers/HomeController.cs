@@ -13,8 +13,6 @@ namespace ClientMvc.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public IEnumerable<EventDto> AllEvents { get; private set; }
-
         public HomeController(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
@@ -22,7 +20,7 @@ namespace ClientMvc.Controllers
 
         public IActionResult Index()
         {
-            return View(nameof(Index));
+            return View();
         }
         public IActionResult Logout()
         {
@@ -33,12 +31,13 @@ namespace ClientMvc.Controllers
         public async Task<IActionResult> Secret()
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var idToken = await HttpContext.GetTokenAsync("id_token");
 
-            var jwtAccessTokenHandler = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
-            var jwtIdTokenHandler = new JwtSecurityTokenHandler().ReadJwtToken(idToken);
+            /*            var idToken = await HttpContext.GetTokenAsync("id_token");
 
-            var claims = User.Claims.ToList();
+                        var jwtAccessTokenHandler = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
+                        var jwtIdTokenHandler = new JwtSecurityTokenHandler().ReadJwtToken(idToken);
+
+                        var claims = User.Claims.ToList();*/
 
 
             var result = await GetCalendarInfo(accessToken);
@@ -49,7 +48,7 @@ namespace ClientMvc.Controllers
             return View(nameof(Secret), eventsViewModel);
         }
 
-        public async Task<IEnumerable<EventDto>> GetCalendarInfo(string accessToken)
+        private async Task<IEnumerable<EventDto>> GetCalendarInfo(string accessToken)
         {
             var apiClient = _httpClientFactory.CreateClient();
 
