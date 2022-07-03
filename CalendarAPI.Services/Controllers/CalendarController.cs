@@ -18,8 +18,8 @@ namespace CalendarAPI.Services.Controllers
         private readonly ILoggerManager _logger;
         private readonly IEventRepository _eventRepository;
 
-        public CalendarController(IEventRepository eventRepository, 
-                                  ILoggerManager logger, 
+        public CalendarController(IEventRepository eventRepository,
+                                  ILoggerManager logger,
                                   IMapper mapper)
         {
             _eventRepository = eventRepository;
@@ -27,21 +27,31 @@ namespace CalendarAPI.Services.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/<CalendarController>
+        // GET: api/Calendar
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EventDto>>> GetAllEvents()
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetEventsByDate(DateOnly date)
         {
             try
             {
-                var asd = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+                var userId = GetCurrentUserId();
 
-                //IdentityUser user = await GetCurrentUserAsync();
+                if (userId == null)
+                {
+                    _logger.LogInfo($"Failed getting current user.");
+                    return StatusCode(500, "Internal server error");                  
+                }
 
-                var events = await _eventRepository.GetEventsAsync(new Guid(asd));
-                _logger.LogInfo($"Returned all events from database.");
+                _logger.LogInfo($"Got Id of current user: {userId} .");
+
+                var allEvents = await _eventRepository.GetEventsAsync();
+                var events = allEvents.Where(ev => ev.UserId == userId
+                                                && DateOnly.FromDateTime(ev.BeginTime) == date).ToListAsync();
 
                 var eventsResult = _mapper.Map<IEnumerable<EventDto>>(events);
+
+                _logger.LogInfo($"Returned events from database for user: {userId} and with date: {date}.");
                 return Ok(eventsResult);
+
             }
             catch (Exception ex)
             {
@@ -50,18 +60,34 @@ namespace CalendarAPI.Services.Controllers
             }
         }
 
-        // GET api/<CalendarController>/5
+        // GET api/Calendar/5
         [HttpGet("{eventId}")]
-        public async Task<ActionResult<EventDto>> GetOneEvent(string eventId)
+        public ActionResult<EventDto> GetOneEvent(string eventId)
         {
             try
             {
+                var userId = GetCurrentUserId();
+
+                if (userId == null)
+                {
+                    _logger.LogInfo($"Failed getting current user.");
+                    return StatusCode(500, "Internal server error");
+                }
+
+                _logger.LogInfo($"Got Id of current user: {userId} .");
+
                 var currEvent = await _eventRepository.GetEventByIDAsync(eventId);
 
                 if (currEvent == null)
                 {
                     _logger.LogError($"Event with id: {eventId}, hasn't been found in db.");
                     return NotFound($"Event with id: {eventId}, hasn't been found in db.");
+                }
+
+                if (currEvent.UserId != userId)
+                {
+                    _logger.LogInfo($"Id of current user: {userId} and Event's userId: {currEvent.UserId} are diffrent.");
+                    return StatusCode(403, "Forbidden, Current user id and Event's userId are diffrent.");
                 }
 
                 _logger.LogInfo($"Returned Event with id: {eventId}");
@@ -76,13 +102,29 @@ namespace CalendarAPI.Services.Controllers
             }
         }
 
-        // POST api/<CalendarController>
+        // POST api/Calendar
         [HttpPost]
-        public async Task<ActionResult> AddEvent([FromBody] EventDto eventDto)
+        public ActionResult AddEvent([FromBody] EventDto eventDto)
         {
             try
-            {
+            {             
+                var userId = GetCurrentUserId();
+
+                if (userId == null)
+                {
+                    _logger.LogInfo($"Failed getting current user.");
+                    return StatusCode(500, "Internal server error");
+                }
+
+                _logger.LogInfo($"Got Id of current user: {userId} .");
+
                 var currEvent = _mapper.Map<Event>(eventDto);
+
+                if (currEvent.UserId != userId)
+                {
+                    _logger.LogInfo($"Id of current user: {userId} and Event's userId: {currEvent.UserId} are diffrent.");
+                    return StatusCode(403, "Forbidden, Current user id and Event's userId are diffrent.");
+                }
 
                 bool isAdded = _eventRepository.AddEvent(currEvent);
 
@@ -91,8 +133,6 @@ namespace CalendarAPI.Services.Controllers
                     _logger.LogError($"Event with id : {currEvent.Id} already exists.");
                     return BadRequest($"Event with id : {currEvent.Id} already exists.");
                 }
-
-                //return CreatedAtAction(nameof(GetOneEvent), new { id = currEvent.Id }, currEvent);
 
                 _logger.LogInfo($"Event with id : {currEvent.Id} created.");
 
@@ -105,13 +145,29 @@ namespace CalendarAPI.Services.Controllers
             }
         }
 
-        // PUT api/<CalendarController>/5
+        // PUT api/Calendar/5
         [HttpPut]
-        public async Task<ActionResult> PutEvent([FromBody] EventDto eventDto)
+        public ActionResult PutEvent([FromBody] EventDto eventDto)
         {
             try
             {
+                var userId = GetCurrentUserId();
+
+                if (userId == null)
+                {
+                    _logger.LogInfo($"Failed getting current user.");
+                    return StatusCode(500, "Internal server error");
+                }
+
+                _logger.LogInfo($"Got Id of current user: {userId} .");
+
                 var currEvent = _mapper.Map<Event>(eventDto);
+
+                if (currEvent.UserId != userId)
+                {
+                    _logger.LogInfo($"Id of current user: {userId} and Event's userId: {currEvent.UserId} are diffrent.");
+                    return StatusCode(403, "Forbidden, Current user id and Event's userId are diffrent.");
+                }
 
                 bool isUpdated = _eventRepository.UpdateEvent(currEvent);
 
@@ -131,12 +187,36 @@ namespace CalendarAPI.Services.Controllers
             }
         }
 
-        // DELETE api/<CalendarController>/5
+        // DELETE api/Calendar/5
         [HttpDelete("{eventId}")]
         public async Task<ActionResult> DeleteEvent(string eventId)
         {
             try
             {
+                var userId = GetCurrentUserId();
+
+                if (userId == null)
+                {
+                    _logger.LogInfo($"Failed getting current user.");
+                    return StatusCode(500, "Internal server error");
+                }
+
+                _logger.LogInfo($"Got Id of current user: {userId} .");
+
+                var currEvent = await _eventRepository.GetEventByIDAsync(eventId);
+
+                if (currEvent == null)
+                {
+                    _logger.LogError($"Event with id: {eventId}, hasn't been found in db.");
+                    return NotFound($"Event with id: {eventId}, hasn't been found in db.");
+                }
+
+                if (currEvent.UserId != userId)
+                {
+                    _logger.LogInfo($"Id of current user: {userId} and Event's userId: {currEvent.UserId} are diffrent.");
+                    return StatusCode(403, "Forbidden, Current user id and Event's userId are diffrent.");
+                }
+
                 bool isDeleted = _eventRepository.DeleteEvent(eventId);
 
                 if (!isDeleted)
@@ -152,6 +232,21 @@ namespace CalendarAPI.Services.Controllers
             {
                 _logger.LogError($"Something went wrong inside DeleteEvent action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
+            }
+        }
+
+
+
+        private Guid? GetCurrentUserId()
+        {
+            var userIdString = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdString != null)
+            {
+                return new Guid(userIdString);
+            }
+            else
+            {
+                return null;
             }
         }
     }

@@ -7,30 +7,7 @@
         public EventRepository(EventDbContext dbContext)
         {
             _dbContext = dbContext;
-        }
-        private Event? GetEventByID(Guid eventId)
-        {
-            return _dbContext.Events.FirstOrDefault(ev => ev.Id == eventId);
-        }
-
-        private Event? GetEventByID(string eventId)
-        {
-            try
-            {
-                Guid _eventId = new Guid(eventId);
-                return GetEventByID(_eventId);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private async Task<Event?> GetEventByIDAsync(Guid eventId)
-        {
-            return await _dbContext.Events.FirstOrDefaultAsync(ev => ev.Id == eventId);
-        }
-
+        }   
         public async Task<Event?> GetEventByIDAsync(string eventId)
         {
             try
@@ -44,9 +21,9 @@
             }
         }
 
-        public async Task<IEnumerable<Event>> GetEventsAsync(Guid id)
+        public async Task<IQueryable<Event>> GetEventsAsync()
         {
-            return await _dbContext.Events.Where(ev => ev.UserId == id).ToListAsync();
+            return _dbContext.Events;
         }
 
         public bool AddEvent(Event currEvent)
@@ -88,6 +65,29 @@
         public void Save()
         {
             _dbContext.SaveChanges();
+        }
+
+
+
+        private Event? GetEventByID(Guid eventId)
+        {
+            return _dbContext.Events.FirstOrDefault(ev => ev.Id == eventId);
+        }
+        private Event? GetEventByID(string eventId)
+        {
+            try
+            {
+                Guid _eventId = new Guid(eventId);
+                return GetEventByID(_eventId);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        private async Task<Event?> GetEventByIDAsync(Guid eventId)
+        {
+            return await _dbContext.Events.FirstOrDefaultAsync(ev => ev.Id == eventId);
         }
     }
 }
