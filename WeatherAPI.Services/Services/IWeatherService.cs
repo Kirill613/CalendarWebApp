@@ -4,6 +4,6 @@ namespace WeatherAPI.Services.Services
 {
     public interface IWeatherService
     {
-        Task<WeatherData> GetForecast(double latitude, double longitude, int cnt);
+        Task<OneDayForecastDto> GetForecast(double latitude, double longitude, int dt);
     }
 }
