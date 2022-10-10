@@ -134,7 +134,6 @@ namespace ClientMvc.Controllers
 
         private async Task<EventsViewModel> GetSecretModel()
         {
-
             var result = await GetCalendarInfo();
 
             EventsViewModel eventsViewModel = new EventsViewModel();
@@ -173,9 +172,27 @@ namespace ClientMvc.Controllers
            
             return eventsViewModel;
         }
-        /* Int32 unixEndTime = (int)eventDto.EndTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-       Int32 unixBeginTime = (int)eventDto.BeginTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-       int timeMiddle = (unixEndTime / 2 + unixBeginTime / 2);*/
+        private int FindClosestTemp(WeatherDataDto resTemperatures, EventDto eventDto)
+        {
+            Int32 unixEndTime = (int)eventDto.EndTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            Int32 unixBeginTime = (int)eventDto.BeginTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            int timeMiddle = (unixEndTime / 2 + unixBeginTime / 2) ;
+        
+            int min = 0;
+            WeatherListDto dtMinTime = new WeatherListDto();
+            foreach(var item in resTemperatures.list)
+            {
+                int result = Math.Abs(timeMiddle - item.dt);
+
+                if (result <= min || min == 0)
+                {
+                    min = result;
+                    dtMinTime = item;
+                }
+            }
+
+            return (int)(dtMinTime.main.temp - 273.15);
+        }
         private DateTime UnixTimeStampToDateTime(double unixTimeStamp)
         {
             // Unix timestamp is seconds past epoch
@@ -210,11 +227,7 @@ namespace ClientMvc.Controllers
 
             apiClient.SetBearerToken(accessToken);
 
-            double lat = 53.893009;
-            double lon = 27.567444;
-            double dt = 1647345600;
-
-            var response = await apiClient.GetStringAsync($"https://localhost:5007/api/Weather?lat={lat}&lon={lon}&dt={dt}");
+            var response = await apiClient.GetStringAsync("https://localhost:5007/api/Weather");
 
             await RefreshAccessToken();
 

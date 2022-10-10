@@ -5,10 +5,10 @@
         public int cod { get; set; }
         public int message { get; set; }
         public int cnt { get; set; }
-        public List<OneDayForecast> list { get; set; }
+        public List<WeatherList> list { get; set; }
         public City city { get; set; }
     }
-    public class OneDayForecast
+    public class WeatherList
     {
         public int dt { get; set; }
         public Main main { get; set; }

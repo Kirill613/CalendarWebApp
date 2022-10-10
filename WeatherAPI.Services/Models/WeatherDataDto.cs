@@ -2,9 +2,9 @@
 {
     public class WeatherDataDto
     {
-        public List<OneDayForecastDto> list { get; set; }     
+        public List<WeatherListDto> list { get; set; }     
     }
-    public class OneDayForecastDto
+    public class WeatherListDto
     {
         public int dt { get; set; }
         public MainDto main { get; set; }
