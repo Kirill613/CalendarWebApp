@@ -7,18 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Home\CreateUpdateDialogPartial.cshtml" />
-    <Content Remove="wwwroot\js\maps.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\css\headers.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\maps.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\Home\CreateUpdateDialogPartial.cshtml" />
-    <None Include="wwwroot\js\maps.js" />
   </ItemGroup>
 
   <ItemGroup>
